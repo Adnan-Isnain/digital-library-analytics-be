@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  password String
+  name     String
+  role     String
+  members  Member[]
+  books    Book[]
+  lendings Lending[] @relation("UserCreatedLendings")
+}
+
+model Member {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  name        String
+  email       String
+  phone       String?
+  status      String
+  joinedDate  DateTime
+  lendings    Lending[]
+}
+
+model Book {
+  id         Int          @id @default(autoincrement())
+  title      String
+  author     String
+  isbn       String       @unique
+  quantity   Int
+  categoryId Int
+  category   Category     @relation(fields: [categoryId], references: [id])
+  createdBy  Int
+  creator    User         @relation(fields: [createdBy], references: [id])
+  lendings   Lending[]
+  bookStatus BookStatus[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+}
+
+model Lending {
+  id           Int       @id @default(autoincrement())
+  bookId       Int
+  book         Book      @relation(fields: [bookId], references: [id])
+  memberId     Int
+  member       Member    @relation(fields: [memberId], references: [id])
+  borrowedDate DateTime
+  dueDate      DateTime
+  returnDate   DateTime?  
+  status       String
+  createdBy    Int
+  creator      User       @relation("UserCreatedLendings", fields: [createdBy], references: [id])
+}
+
+model BookStatus {
+  id           Int   @id @default(autoincrement())
+  bookId       Int
+  book         Book  @relation(fields: [bookId], references: [id])
+  availableQty Int
+  borrowedQty  Int
+}
