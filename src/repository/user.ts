@@ -8,12 +8,11 @@ export class UserRepository {
     this.prisma = prisma;
   }
 
-  async createUser(email: string, password: string, name: string, role: string): Promise<User> {
+  async createUser(email: string, password: string, role: string): Promise<User> {
     return this.prisma.user.create({
       data: {
         email,
         password,
-        name,
         role,
       },
     });
@@ -27,7 +26,7 @@ export class UserRepository {
     });
   }
 
-  async getUserById(id: number): Promise<User | null> {
+  async getUserById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: {
         id,
@@ -35,7 +34,7 @@ export class UserRepository {
     });
   }
 
-  async updateUser(id: number, data: Partial<User>): Promise<User> {
+  async updateUser(id: string, data: Partial<User>): Promise<User> {
     return this.prisma.user.update({
       where: {
         id,
@@ -44,7 +43,7 @@ export class UserRepository {
     });
   }
 
-  async deleteUser(id: number): Promise<User> {
+  async deleteUser(id: string): Promise<User> {
     return this.prisma.user.delete({
       where: {
         id,

@@ -1,5 +1,7 @@
-import { userRepository } from "../repository";
+import { userRepository, bookRepository } from "../repository";
+import { BookService } from "./book";
 import { UserService } from "./user";
 
 const userService = new UserService(userRepository)
-export {userService}
+const bookService = new BookService(bookRepository)
+export {userService, bookService}

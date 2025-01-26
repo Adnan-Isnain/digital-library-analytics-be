@@ -19,6 +19,9 @@
     "url": "https://github.com/Adnan-Isnain/digital-library-analytics-be/issues"
   },
   "homepage": "https://github.com/Adnan-Isnain/digital-library-analytics-be#readme",
+  "prisma": {
+    "seed": "ts-node src/plugins/prisma/seeder.ts"
+  },
   "dependencies": {
     "@fastify/jwt": "^9.0.3",
     "@fastify/static": "^8.0.4",

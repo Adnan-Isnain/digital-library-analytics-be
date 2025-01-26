@@ -5,7 +5,7 @@ export async function jwtAuthMiddleware(request: FastifyRequest, reply: FastifyR
     // Verify the JWT token (check the Authorization header)
     const token = request.headers['authorization']?.replace('Bearer ', '');
     if (!token) {
-      reply.status(401).send({ message: 'Token is required' });
+      reply.status(401).send({ message: 'Unauthorized: Missing token' });
       return;
     }
 

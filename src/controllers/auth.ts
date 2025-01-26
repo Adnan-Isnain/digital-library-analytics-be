@@ -17,7 +17,7 @@ export class AuthController {
   }
 
   async register(request: FastifyRequest, reply: FastifyReply) {
-    const { email, password, name } = request.body as IUser;
+    const { email, password } = request.body as IUser;
 
     try {
       const user = await this.userService.findUser(email)
@@ -28,7 +28,7 @@ export class AuthController {
       }
       // Hash the password before storing it
       const hashedPassword = await bcryptjs.hash(password, 10);
-      const newUser = await this.userService.register(email, hashedPassword, name, userRole.user);
+      const newUser = await this.userService.register(email, hashedPassword);
       const token = await this.jwtService.signToken({
         email: newUser.email,
         role: newUser.role
