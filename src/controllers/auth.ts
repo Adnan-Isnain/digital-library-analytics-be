@@ -1,10 +1,9 @@
 import { FastifyRequest, FastifyReply} from 'fastify';
-import { UserService } from '../services/user';
+import { UserService } from '@services/user';
 import { StatusCodes } from 'http-status-codes';
-import { JWTService } from '../services/jwt';
+import { JWTService } from '@services/jwt';
 import bcryptjs from 'bcryptjs'
-import {IUser} from './type'
-import { userRole } from '../models/enum/role';
+import { IAuth } from '@models/interface/auth';
 
 
 export class AuthController {
@@ -17,7 +16,7 @@ export class AuthController {
   }
 
   async register(request: FastifyRequest, reply: FastifyReply) {
-    const { email, password } = request.body as IUser;
+    const { email, password } = request.body as IAuth;
 
     try {
       const user = await this.userService.findUser(email)
@@ -42,7 +41,7 @@ export class AuthController {
   }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
-    const { email, password} = request.body as IUser;
+    const { email, password} = request.body as IAuth;
 
     try {
       const user = await this.userService.findUser(email)

@@ -8,75 +8,74 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  password String
-  name     String?
-  role     String
-  memberId String? @unique
-  member   Member?  @relation("UserToMember", fields: [memberId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String?
+  role      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
+  member    Member?
+  author    Author?
 }
 
 model Member {
-  id              String   @id @default(uuid())
-  userId          String?
+  id              String    @id @default(uuid())
+  userId          String    @unique
   phone           String?
   status          String
-  joinedDate      DateTime
-  membershipLevel String   @default("regular")
-  user            User?    @relation("UserToMember")
+  membershipLevel String    @default("regular")
+  user            User      @relation(fields: [userId], references: [id])
   lendings        Lending[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime? @db.Timestamptz
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? @db.Timestamptz
 }
 
 model Book {
-  id         String        @id @default(uuid())
-  slug       String        @unique
+  id         String      @id @default(uuid())
+  slug       String      @unique
   title      String
-  isbn       String        @unique
+  isbn       String      @unique
   seriesId   String?
   authorId   String
   bookStatus BookStatus?
-  authors    Author        @relation(fields: [authorId], references: [id])
-  categories Category[]    @relation("BookToCategory")
+  authors    Author      @relation(fields: [authorId], references: [id])
+  categories Category[]  @relation("BookToCategory")
 
-  series     Series?       @relation(fields: [seriesId], references: [id])
-  lendings   Lending[]
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  deletedAt  DateTime?     @db.Timestamptz
+  series    Series?   @relation(fields: [seriesId], references: [id])
+  lendings  Lending[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamptz
 }
 
 model Category {
-  id    String   @id @default(uuid())
-  name  String
-  slug  String   @unique
-  books    Book[]   @relation("BookToCategory")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  books     Book[]    @relation("BookToCategory")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
 }
 
 model Lending {
-  id          String   @id @default(uuid())
-  bookId      String
-  memberId    String
+  id           String    @id @default(uuid())
+  bookId       String
+  memberId     String
   borrowedDate DateTime
-  dueDate     DateTime
-  returnDate  DateTime?
-  status      String
-  fineAmount  Decimal   @default(0.00)
+  dueDate      DateTime
+  returnDate   DateTime?
+  status       String
+  fineAmount   Decimal   @default(0.00)
 
-  book        Book     @relation(fields: [bookId], references: [id])
-  member      Member   @relation(fields: [memberId], references: [id])
+  book   Book   @relation(fields: [bookId], references: [id])
+  member Member @relation(fields: [memberId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
 }
 
@@ -86,33 +85,35 @@ model BookStatus {
   availableQty Int
   borrowedQty  Int
 
-  book         Book @relation(fields: [bookId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
 }
 
 model Series {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
-  slug        String   @unique
+  slug        String  @unique
   description String?
   books       Book[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
 }
 
 model Author {
-  id      String   @id @default(uuid())
-  name    String
+  id      String  @id @default(uuid())
+  name    String?
   penName String?
   bio     String?
   books   Book[]
+  userId  String  @unique
+  user    User    @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? @db.Timestamptz
 }

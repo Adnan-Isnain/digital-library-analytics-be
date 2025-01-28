@@ -1,5 +1,8 @@
 // src/repositories/UserRepository.ts
-import { PrismaClient, User } from '@prisma/client';
+import { userMembership } from '@models/enum/membership';
+import { userRole } from '@models/enum/role';
+import { userStatus } from '@models/enum/status';
+import { Author, Member, Prisma, PrismaClient, User } from '@prisma/client';
 
 export class UserRepository {
   private prisma: PrismaClient;
@@ -14,15 +17,25 @@ export class UserRepository {
         email,
         password,
         role,
+        member: role === userRole.member ? {
+          create: {
+            status: userStatus.pending,
+            membershipLevel: userMembership.regular
+          }
+        } : undefined,
+        author: role === userRole.author ? {
+          create: {}
+        } : undefined
       },
     });
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
+  async getUserByEmail(email: string, option?: Prisma.SelectAndInclude): Promise<User & { author?: Author | null; member?: Member | null } | null> {
     return this.prisma.user.findUnique({
       where: {
         email,
       },
+      ...option
     });
   }
 

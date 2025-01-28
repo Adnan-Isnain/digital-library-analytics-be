@@ -1,9 +1,33 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import bcryptjs from 'bcryptjs'
 
 const prisma = new PrismaClient();
 
 const initialSeeder = async () => {
   console.info("Seeding initial data...");
+  const password = await bcryptjs.hash("123456", 10)
+  const users = [
+    {
+      id : "feabd7fd-6301-4b9e-9fef-2ae7f5de9394",
+      email: "jk.rowling@test.com",
+      password: password,
+      role: "author"
+    },
+    {
+      id: "6ac79fcd-2a3f-4330-8e8c-56b162ef3771",
+      email: "jrr.tolkien@test.com",
+      password: password,
+      role: "author"
+    },
+    {
+      id: "2406f88c-8002-48f3-9dc1-f5c4d8d54e76",
+      email: "ac.doyle@test.com",
+      password: password,
+      role: "author"
+    },
+  ]
+
+
 
   const categories = [
     { name: "Fantasy", slug: "fantasy" },
@@ -16,16 +40,19 @@ const initialSeeder = async () => {
       id: "f531a60c-9f98-41ce-b431-847ef8884b84",
       name: "J.K. Rowling",
       bio: "J.K. Rowling is a famous British author, best known for the Harry Potter series.",
+      userId: "feabd7fd-6301-4b9e-9fef-2ae7f5de9394"
     },
     {
       id: "04da3d5e-6e4e-4ce7-bc9b-8020b05affd0",
       name: "J.R.R. Tolkien",
       bio: "J.R.R. Tolkien was an English writer and professor, best known for writing 'The Hobbit' and 'The Lord of the Rings'.",
+      userId: "6ac79fcd-2a3f-4330-8e8c-56b162ef3771"
     },
     {
       id: "dcda3542-d9a3-4062-98be-19388144e45e",
       name: "Arthur Conan Doyle",
       bio: "Arthur Conan Doyle was a Scottish author, famous for creating the detective character Sherlock Holmes.",
+      userId: "2406f88c-8002-48f3-9dc1-f5c4d8d54e76"
     },
   ];
 
@@ -47,7 +74,7 @@ const initialSeeder = async () => {
     },
   ];
 
-  const books =  [
+  const books = [
     {
       title: "Harry Potter and the Sorcerer's Stone",
       slug: "harry-potter-and-the-sorcerers-stone",
@@ -117,6 +144,9 @@ const initialSeeder = async () => {
   console.info("Starting Transaction...");
 
   await prisma.$transaction(async (tx) => {
+    console.info("Seeding user...");
+    await tx.user.createMany({ data: users });
+
     console.info("Seeding categories...");
     await tx.category.createMany({ data: categories });
 

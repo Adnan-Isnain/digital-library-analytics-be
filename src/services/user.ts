@@ -1,6 +1,6 @@
-import { User } from "@prisma/client";
-import { UserRepository } from "../repository/user";
-import { userRole } from "../models/enum/role";
+import { Author, Member, Prisma, User } from "@prisma/client";
+import { UserRepository } from "@repository/user";
+import { userRole } from "@models/enum/role";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -13,7 +13,7 @@ export class UserService {
     return this.userRepository.createUser(email, password, role ||  userRole.member);
   }
 
-  async findUser(email: string): Promise<User | null> {
-    return this.userRepository.getUserByEmail(email);
+  async findUser(email: string, options?: Prisma.SelectAndInclude): Promise<User & { author?: Author | null; member?: Member | null } | null> {
+    return this.userRepository.getUserByEmail(email, options);
   }
 }

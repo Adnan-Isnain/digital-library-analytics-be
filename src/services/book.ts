@@ -1,7 +1,6 @@
 import { Book, User } from "@prisma/client";
-import { UserRepository } from "../repository/user";
-import { userRole } from "../models/enum/role";
-import { BookRepository } from "../repository/book";
+import { BookRepository } from "@repository/book";
+import { ICreateNewBook } from "@models/interface/book";
 
 export class BookService {
   private bookRepository: BookRepository;
@@ -10,7 +9,17 @@ export class BookService {
     this.bookRepository = bookRepository;
   }
 
-  async getBooks(page?: number, limit? : number): Promise<Book[]> {
+  async getBooks(page?: number, limit?: number): Promise<Book[]> {
     return await this.bookRepository.getAll(page || 1, limit || 10);
+  }
+
+  async createNewBook(book: ICreateNewBook): Promise<boolean> {
+    const data = this.bookRepository.findBySlug(book.slug)
+    if (!data) {
+      await this.bookRepository.createNewBook(book);
+      return true
+    }
+
+    return true
   }
 }

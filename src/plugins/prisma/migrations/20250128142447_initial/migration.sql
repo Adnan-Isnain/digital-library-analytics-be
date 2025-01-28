@@ -5,7 +5,6 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "name" TEXT,
     "role" TEXT NOT NULL,
-    "memberId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMPTZ,
@@ -16,10 +15,9 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Member" (
     "id" TEXT NOT NULL,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
     "phone" TEXT,
     "status" TEXT NOT NULL,
-    "joinedDate" TIMESTAMP(3) NOT NULL,
     "membershipLevel" TEXT NOT NULL DEFAULT 'regular',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -101,9 +99,10 @@ CREATE TABLE "Series" (
 -- CreateTable
 CREATE TABLE "Author" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" TEXT,
     "penName" TEXT,
     "bio" TEXT,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMPTZ,
@@ -123,7 +122,7 @@ CREATE TABLE "_BookToCategory" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_memberId_key" ON "User"("memberId");
+CREATE UNIQUE INDEX "Member_userId_key" ON "Member"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Book_slug_key" ON "Book"("slug");
@@ -141,10 +140,13 @@ CREATE UNIQUE INDEX "BookStatus_bookId_key" ON "BookStatus"("bookId");
 CREATE UNIQUE INDEX "Series_slug_key" ON "Series"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Author_userId_key" ON "Author"("userId");
+
+-- CreateIndex
 CREATE INDEX "_BookToCategory_B_index" ON "_BookToCategory"("B");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Book" ADD CONSTRAINT "Book_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -160,6 +162,9 @@ ALTER TABLE "Lending" ADD CONSTRAINT "Lending_memberId_fkey" FOREIGN KEY ("membe
 
 -- AddForeignKey
 ALTER TABLE "BookStatus" ADD CONSTRAINT "BookStatus_bookId_fkey" FOREIGN KEY ("bookId") REFERENCES "Book"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Author" ADD CONSTRAINT "Author_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_BookToCategory" ADD CONSTRAINT "_BookToCategory_A_fkey" FOREIGN KEY ("A") REFERENCES "Book"("id") ON DELETE CASCADE ON UPDATE CASCADE;
